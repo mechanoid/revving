@@ -69,14 +69,21 @@ module.exports = async (inputDir, outputDir) => {
   await fs.ensureDir(outputDir)
 
   try {
-    const manifest = await Promise.all(
+    const manifestFiles = await Promise.all(
       files.map(copyFileWithHashedName(inputDir, outputDir))
     )
 
-    return manifest.reduce((res, curr) => {
+    const manifest = manifestFiles.reduce((res, curr) => {
       res[curr[0]] = curr[1]
       return res
     }, {})
+
+    await fs.outputFile(
+      path.join(outputDir, 'manifest.json'),
+      JSON.stringify(manifest, null, 2)
+    )
+
+    return manifest
   } catch (e) {
     throw e
   }
