@@ -1,10 +1,14 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
 const tape = require('tape')
 const revving = require('../../index.js')
 
 const sampleDirPath = path.join(__dirname, 'fixtures', 'sample-dir')
 const testTmpPath = path.join(__dirname, 'tmp')
+const copyFileWithHashedNameTmpFolder = path.join(
+  testTmpPath,
+  'copyFileWithHashedName-test'
+)
 
 const hashedName = async file => {
   const filePath = path.join(sampleDirPath, file)
@@ -28,15 +32,20 @@ tape.test('revFiles', t => {
 })
 
 tape.test('copyFileWithHashedName', async t => {
-  const testTmpFolder = path.join(testTmpPath, 'copyFileWithHashedName-test')
-  const copyFile = revving.copyFileWithHashedName(sampleDirPath, testTmpFolder)
+  const copyFile = revving.copyFileWithHashedName(
+    sampleDirPath,
+    copyFileWithHashedNameTmpFolder
+  )
   const testFilePath = path.join(sampleDirPath, 'file.txt')
 
   await copyFile(testFilePath)
 
   t.ok(
     fs.existsSync(
-      path.join(testTmpFolder, 'file-3b5d5c3712955042212316173ccf37be.txt')
+      path.join(
+        copyFileWithHashedNameTmpFolder,
+        'file-3b5d5c3712955042212316173ccf37be.txt'
+      )
     ),
     'hashed file version has been copied to target folder'
   )
@@ -152,4 +161,8 @@ tape.test('flattenArray', t => {
   )
 
   t.end()
+})
+
+tape.onFinish(async () => {
+  fs.remove(testTmpPath)
 })
