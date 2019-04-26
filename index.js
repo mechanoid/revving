@@ -63,6 +63,20 @@ const copyFileWithHashedName = (inputDir, outputDir) => async filePath => {
   return [baseSourceFileName, baseTargetFileName]
 }
 
+const writeManifest = async (manifestFiles, outputDir) => {
+  const manifest = manifestFiles.reduce((res, curr) => {
+    res[curr[0]] = curr[1]
+    return res
+  }, {})
+
+  await fs.outputFile(
+    path.join(outputDir, 'manifest.json'),
+    JSON.stringify(manifest, null, 2)
+  )
+
+  return manifest
+}
+
 const revFiles = async (inputDir, outputDir) => {
   const files = await collectFiles(inputDir)
 
@@ -73,15 +87,7 @@ const revFiles = async (inputDir, outputDir) => {
       files.map(copyFileWithHashedName(inputDir, outputDir))
     )
 
-    const manifest = manifestFiles.reduce((res, curr) => {
-      res[curr[0]] = curr[1]
-      return res
-    }, {})
-
-    await fs.outputFile(
-      path.join(outputDir, 'manifest.json'),
-      JSON.stringify(manifest, null, 2)
-    )
+    const manifest = await writeManifest(manifestFiles, outputDir)
 
     return manifest
   } catch (e) {
@@ -89,4 +95,11 @@ const revFiles = async (inputDir, outputDir) => {
   }
 }
 
-module.exports = { revFiles }
+module.exports = {
+  revFiles,
+  flattenArray,
+  collectFiles,
+  hashedFileName,
+  stripSourceDirectory,
+  copyFileWithHashedName
+}
