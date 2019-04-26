@@ -19,15 +19,22 @@ args.option(
   requiredCheck('--output-directory / -o')
 )
 
+args.option(
+  'copy-original-files',
+  'also copy the not hashed files to the target dir',
+  true
+)
+
 const flags = args.parse(process.argv)
 
 const inputDir = flags.inputDirectory
 const outputDir = flags.outputDirectory
+const options = { copyOriginalFiles: flags.copyOriginalFiles }
 
 console.log(`start revving files for "${inputDir}":`)
 
 revving
-  .revFiles(inputDir, outputDir)
+  .revFiles(inputDir, outputDir, options)
   .then(manifest => {
     console.log(manifest)
   })

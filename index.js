@@ -45,7 +45,11 @@ const manifestFilePaths = (inputDir, sourceFileName, targetFileName) => {
   return [baseSourceFileName, baseTargetFileName]
 }
 
-const copyFileWithHashedName = (inputDir, outputDir) => async filePath => {
+const copyFileWithHashedName = (
+  inputDir,
+  outputDir,
+  options = {}
+) => async filePath => {
   const targetFilePath = await hashedFileName(filePath)
 
   const [baseSourceFileName, baseTargetFileName] = manifestFilePaths(
@@ -55,6 +59,12 @@ const copyFileWithHashedName = (inputDir, outputDir) => async filePath => {
   )
 
   try {
+    if (options.copyOriginalFiles) {
+      await fs.copy(
+        path.join(filePath),
+        path.join(outputDir, baseSourceFileName)
+      )
+    }
     await fs.copy(path.join(filePath), path.join(outputDir, baseTargetFileName))
   } catch (e) {
     throw e
@@ -77,14 +87,14 @@ const writeManifest = async (manifestFiles, outputDir) => {
   return manifest
 }
 
-const revFiles = async (inputDir, outputDir) => {
+const revFiles = async (inputDir, outputDir, options = {}) => {
   const files = await collectFiles(inputDir)
 
   await fs.ensureDir(outputDir)
 
   try {
     const manifestFiles = await Promise.all(
-      files.map(copyFileWithHashedName(inputDir, outputDir))
+      files.map(copyFileWithHashedName(inputDir, outputDir, options))
     )
 
     const manifest = await writeManifest(manifestFiles, outputDir)

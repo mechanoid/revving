@@ -31,26 +31,65 @@ tape.test('revFiles', t => {
   t.end()
 })
 
-tape.test('copyFileWithHashedName', async t => {
-  const copyFile = revving.copyFileWithHashedName(
-    sampleDirPath,
-    copyFileWithHashedNameTmpFolder
-  )
-  const testFilePath = path.join(sampleDirPath, 'file.txt')
+tape.test('copyFileWithHashedName', tst => {
+  tst.test('copy without original files', async t => {
+    const copyFile = revving.copyFileWithHashedName(
+      sampleDirPath,
+      copyFileWithHashedNameTmpFolder
+    )
 
-  await copyFile(testFilePath)
+    const testFilePath = path.join(sampleDirPath, 'file.txt')
 
-  t.ok(
-    fs.existsSync(
-      path.join(
-        copyFileWithHashedNameTmpFolder,
-        'file-3b5d5c3712955042212316173ccf37be.txt'
-      )
-    ),
-    'hashed file version has been copied to target folder'
-  )
+    await copyFile(testFilePath)
 
-  t.end()
+    t.ok(
+      fs.existsSync(
+        path.join(
+          copyFileWithHashedNameTmpFolder,
+          'file-3b5d5c3712955042212316173ccf37be.txt'
+        )
+      ),
+      'hashed file version has been copied to target folder'
+    )
+
+    t.notOk(
+      fs.existsSync(path.join(copyFileWithHashedNameTmpFolder, 'file.txt')),
+      'original file has been copied to target folder'
+    )
+
+    t.end()
+  })
+
+  tst.test('copy with original files', async t => {
+    const copyFile = revving.copyFileWithHashedName(
+      sampleDirPath,
+      copyFileWithHashedNameTmpFolder,
+      { copyOriginalFiles: true }
+    )
+
+    const testFilePath = path.join(sampleDirPath, 'file.txt')
+
+    await copyFile(testFilePath)
+
+    t.ok(
+      fs.existsSync(
+        path.join(
+          copyFileWithHashedNameTmpFolder,
+          'file-3b5d5c3712955042212316173ccf37be.txt'
+        )
+      ),
+      'hashed file version has been copied to target folder'
+    )
+
+    t.ok(
+      fs.existsSync(path.join(copyFileWithHashedNameTmpFolder, 'file.txt')),
+      'original file has been copied to target folder'
+    )
+
+    t.end()
+  })
+
+  tst.end()
 })
 
 tape.test('collectFiles', async t => {
