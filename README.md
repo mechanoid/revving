@@ -22,6 +22,14 @@ copied files in the form of
 
 This `manifest.json` can be used to lookup the revved version in templates.
 
+## Installation
+
+```
+npm i revving
+```
+
+## Usage
+
 ```
 npx revving -h
 
