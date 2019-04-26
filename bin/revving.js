@@ -26,7 +26,8 @@ const outputDir = flags.outputDirectory
 
 console.log(`start revving files for "${inputDir}":`)
 
-revving(inputDir, outputDir)
+revving
+  .revFiles(inputDir, outputDir)
   .then(manifest => {
     console.log(manifest)
   })

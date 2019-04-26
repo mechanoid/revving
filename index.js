@@ -63,7 +63,7 @@ const copyFileWithHashedName = (inputDir, outputDir) => async filePath => {
   return [baseSourceFileName, baseTargetFileName]
 }
 
-module.exports = async (inputDir, outputDir) => {
+const revFiles = async (inputDir, outputDir) => {
   const files = await collectFiles(inputDir)
 
   await fs.ensureDir(outputDir)
@@ -88,3 +88,5 @@ module.exports = async (inputDir, outputDir) => {
     throw e
   }
 }
+
+module.exports = { revFiles }
