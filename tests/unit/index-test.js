@@ -5,9 +5,13 @@ const revving = require('../../index.js')
 
 const sampleDirPath = path.join(__dirname, 'fixtures', 'sample-dir')
 const testTmpPath = path.join(__dirname, 'tmp')
-const copyFileWithHashedNameTmpFolder = path.join(
+const hashedNameTmpFolder = path.join(
   testTmpPath,
   'copyFileWithHashedName-test'
+)
+const hashedNameTmpFolderWithOriginals = path.join(
+  testTmpPath,
+  'copyFileWithHashedNameWithOriginals-test'
 )
 
 const hashedName = async file => {
@@ -35,7 +39,7 @@ tape.test('copyFileWithHashedName', tst => {
   tst.test('copy without original files', async t => {
     const copyFile = revving.copyFileWithHashedName(
       sampleDirPath,
-      copyFileWithHashedNameTmpFolder
+      hashedNameTmpFolder
     )
 
     const testFilePath = path.join(sampleDirPath, 'file.txt')
@@ -45,7 +49,7 @@ tape.test('copyFileWithHashedName', tst => {
     t.ok(
       fs.existsSync(
         path.join(
-          copyFileWithHashedNameTmpFolder,
+          hashedNameTmpFolder,
           'file-3b5d5c3712955042212316173ccf37be.txt'
         )
       ),
@@ -53,8 +57,8 @@ tape.test('copyFileWithHashedName', tst => {
     )
 
     t.notOk(
-      fs.existsSync(path.join(copyFileWithHashedNameTmpFolder, 'file.txt')),
-      'original file has been copied to target folder'
+      fs.existsSync(path.join(hashedNameTmpFolder, 'file.txt')),
+      'original file has not been copied to target folder'
     )
 
     t.end()
@@ -63,7 +67,7 @@ tape.test('copyFileWithHashedName', tst => {
   tst.test('copy with original files', async t => {
     const copyFile = revving.copyFileWithHashedName(
       sampleDirPath,
-      copyFileWithHashedNameTmpFolder,
+      hashedNameTmpFolderWithOriginals,
       { copyOriginalFiles: true }
     )
 
@@ -74,7 +78,7 @@ tape.test('copyFileWithHashedName', tst => {
     t.ok(
       fs.existsSync(
         path.join(
-          copyFileWithHashedNameTmpFolder,
+          hashedNameTmpFolderWithOriginals,
           'file-3b5d5c3712955042212316173ccf37be.txt'
         )
       ),
@@ -82,7 +86,7 @@ tape.test('copyFileWithHashedName', tst => {
     )
 
     t.ok(
-      fs.existsSync(path.join(copyFileWithHashedNameTmpFolder, 'file.txt')),
+      fs.existsSync(path.join(hashedNameTmpFolderWithOriginals, 'file.txt')),
       'original file has been copied to target folder'
     )
 
