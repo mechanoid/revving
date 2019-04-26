@@ -73,9 +73,9 @@ const copyFileWithHashedName = (
   return [baseSourceFileName, baseTargetFileName]
 }
 
-const writeManifest = async (manifestFiles, outputDir) => {
+const writeManifest = async (manifestFiles, outputDir, options = {}) => {
   const manifest = manifestFiles.reduce((res, curr) => {
-    res[curr[0]] = curr[1]
+    res[curr[0]] = options.mode === 'development' ? curr[0] : curr[1]
     return res
   }, {})
 
@@ -97,7 +97,7 @@ const revFiles = async (inputDir, outputDir, options = {}) => {
       files.map(copyFileWithHashedName(inputDir, outputDir, options))
     )
 
-    const manifest = await writeManifest(manifestFiles, outputDir)
+    const manifest = await writeManifest(manifestFiles, outputDir, options)
 
     return manifest
   } catch (e) {

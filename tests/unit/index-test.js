@@ -5,14 +5,6 @@ const revving = require('../../index.js')
 
 const sampleDirPath = path.join(__dirname, 'fixtures', 'sample-dir')
 const testTmpPath = path.join(__dirname, 'tmp')
-const hashedNameTmpFolder = path.join(
-  testTmpPath,
-  'copyFileWithHashedName-test'
-)
-const hashedNameTmpFolderWithOriginals = path.join(
-  testTmpPath,
-  'copyFileWithHashedNameWithOriginals-test'
-)
 
 const hashedName = async file => {
   const filePath = path.join(sampleDirPath, file)
@@ -29,17 +21,56 @@ const hashFromFileName = name => {
   return splitted[splitted.length - 1]
 }
 
-tape.test('revFiles', t => {
-  t.ok(true)
+tape.test('revFiles', tst => {
+  tst.test('in default/production mode', async t => {
+    const testTmpFolder = path.join(testTmpPath, 'revFiles-test')
 
-  t.end()
+    await revving.revFiles(sampleDirPath, testTmpFolder)
+
+    const manifestPath = path.join(testTmpFolder, 'manifest.json')
+    t.ok(fs.existsSync(manifestPath), 'manifest is created')
+
+    const manifest = require(manifestPath)
+
+    t.equal(
+      manifest['file.txt'],
+      'file-3b5d5c3712955042212316173ccf37be.txt',
+      'manifest maps unrevved to revved assets'
+    )
+
+    t.end()
+  })
+
+  tst.test('in development mode', async t => {
+    const testTmpFolder = path.join(testTmpPath, 'revFiles-development-test')
+
+    await revving.revFiles(sampleDirPath, testTmpFolder, {
+      mode: 'development'
+    })
+
+    const manifestPath = path.join(testTmpFolder, 'manifest.json')
+    t.ok(fs.existsSync(manifestPath), 'manifest is created')
+
+    const manifest = require(manifestPath)
+
+    t.equal(
+      manifest['file.txt'],
+      'file.txt',
+      'manifest maps unrevved to revved assets'
+    )
+
+    t.end()
+  })
+
+  tst.end()
 })
 
 tape.test('copyFileWithHashedName', tst => {
   tst.test('copy without original files', async t => {
+    const testTmpFolder = path.join(testTmpPath, 'copyFileWithHashedName-test')
     const copyFile = revving.copyFileWithHashedName(
       sampleDirPath,
-      hashedNameTmpFolder
+      testTmpFolder
     )
 
     const testFilePath = path.join(sampleDirPath, 'file.txt')
@@ -48,16 +79,13 @@ tape.test('copyFileWithHashedName', tst => {
 
     t.ok(
       fs.existsSync(
-        path.join(
-          hashedNameTmpFolder,
-          'file-3b5d5c3712955042212316173ccf37be.txt'
-        )
+        path.join(testTmpFolder, 'file-3b5d5c3712955042212316173ccf37be.txt')
       ),
       'hashed file version has been copied to target folder'
     )
 
     t.notOk(
-      fs.existsSync(path.join(hashedNameTmpFolder, 'file.txt')),
+      fs.existsSync(path.join(testTmpFolder, 'file.txt')),
       'original file has not been copied to target folder'
     )
 
@@ -65,9 +93,13 @@ tape.test('copyFileWithHashedName', tst => {
   })
 
   tst.test('copy with original files', async t => {
+    const testTmpFolder = path.join(
+      testTmpPath,
+      'copyFileWithHashedNameWithOriginals-test'
+    )
     const copyFile = revving.copyFileWithHashedName(
       sampleDirPath,
-      hashedNameTmpFolderWithOriginals,
+      testTmpFolder,
       { copyOriginalFiles: true }
     )
 
@@ -77,16 +109,13 @@ tape.test('copyFileWithHashedName', tst => {
 
     t.ok(
       fs.existsSync(
-        path.join(
-          hashedNameTmpFolderWithOriginals,
-          'file-3b5d5c3712955042212316173ccf37be.txt'
-        )
+        path.join(testTmpFolder, 'file-3b5d5c3712955042212316173ccf37be.txt')
       ),
       'hashed file version has been copied to target folder'
     )
 
     t.ok(
-      fs.existsSync(path.join(hashedNameTmpFolderWithOriginals, 'file.txt')),
+      fs.existsSync(path.join(testTmpFolder, 'file.txt')),
       'original file has been copied to target folder'
     )
 
