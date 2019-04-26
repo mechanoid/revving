@@ -59,7 +59,7 @@ const copyFileWithHashedName = (
   )
 
   try {
-    if (options.copyOriginalFiles) {
+    if (options.copyOriginalFiles || options.mode !== 'production') {
       await fs.copy(
         path.join(filePath),
         path.join(outputDir, baseSourceFileName)
