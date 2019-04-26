@@ -31,7 +31,7 @@ npm i revving
 ## Usage
 
 ```
-npx revving -h
+$ revving -h
 
   Usage: revving [options] [command]
 
