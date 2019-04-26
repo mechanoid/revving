@@ -8,7 +8,7 @@
     "revving": "bin/revving.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape tests/**/*.js"
   },
   "description": "",
   "devDependencies": {
@@ -17,7 +17,8 @@
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "tape": "^4.10.1"
   },
   "dependencies": {
     "args": "^5.0.1",
