@@ -73,9 +73,22 @@ const copyFileWithHashedName = (
   return [baseSourceFileName, baseTargetFileName]
 }
 
+const manifestRefPath = (file, options = {}) => {
+  console.log(options.prefixPath)
+  return options.prefixPath ? path.join(options.prefixPath, file) : file
+}
+
 const writeManifest = async (manifestFiles, outputDir, options = {}) => {
   const manifest = manifestFiles.reduce((res, curr) => {
-    res[curr[0]] = options.mode === 'development' ? curr[0] : curr[1]
+    const originalFile = manifestRefPath(curr[0], options)
+
+    const revvedFile =
+      options.mode === 'development'
+        ? originalFile
+        : manifestRefPath(curr[1], options)
+
+    res[originalFile] = revvedFile
+
     return res
   }, {})
 

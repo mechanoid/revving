@@ -26,6 +26,11 @@ args.option(
 )
 
 args.option(
+  'prefix-path',
+  'path that prefixes all file references in the manifest.json'
+)
+
+args.option(
   'mode',
   `mode can be "development", "production" or "auto".
       In "production" mode only revved files are copied, if not accompanied by --copy-original-files.
@@ -39,8 +44,7 @@ args.option(
       When NODE_ENV is set to "production" it is production, otherwise it is "development".
 
       NOTE: if mode is equal to "development" all original files will always be copied, disregards
-      to --copy-original-files or --dont-copy-original-files
-`,
+      to --copy-original-files or --dont-copy-original-files`,
   'production',
   val => {
     if (val === 'auto') {
@@ -90,6 +94,10 @@ args
     'NODE_ENV=development revving -i ./my-asset-folder -o ./my-target-folder -m auto',
     'same as -m development'
   )
+  .example(
+    'revving -i ./my-asset-folder -o ./my-target-folder -p my-assets/example',
+    'prefixes all references in manifest file with "my-assets/example". e.g. file.txt becomes my-assets/example/file.txt'
+  )
 
 const flags = args.parse(process.argv, {
   usageFilter: usage => {
@@ -114,7 +122,6 @@ const flags = args.parse(process.argv, {
 
   This manifest.json can be used to lookup the revved version in templates.
       `)
-    // return usage
   }
 })
 
@@ -122,7 +129,8 @@ const inputDir = flags.inputDirectory
 const outputDir = flags.outputDirectory
 const options = {
   copyOriginalFiles: !flags.dontCopyOriginalFiles && flags.copyOriginalFiles,
-  mode: flags.mode
+  mode: flags.mode,
+  prefixPath: flags.prefixPath
 }
 
 revving

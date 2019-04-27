@@ -62,6 +62,27 @@ tape.test('revFiles', tst => {
     t.end()
   })
 
+  tst.test('with prefix path', async t => {
+    const testTmpFolder = path.join(testTmpPath, 'revFiles-prefix-path-test')
+
+    await revving.revFiles(sampleDirPath, testTmpFolder, {
+      prefixPath: 'sample/example'
+    })
+
+    const manifestPath = path.join(testTmpFolder, 'manifest.json')
+    t.ok(fs.existsSync(manifestPath), 'manifest is created')
+
+    const manifest = require(manifestPath)
+
+    t.equal(
+      manifest['sample/example/file.txt'],
+      'sample/example/file-3b5d5c3712955042212316173ccf37be.txt',
+      'references are prefixed with the prefixPath option'
+    )
+
+    t.end()
+  })
+
   tst.end()
 })
 
