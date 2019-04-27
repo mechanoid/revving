@@ -118,8 +118,6 @@ const flags = args.parse(process.argv, {
   }
 })
 
-console.log(process.env.NODE_ENV)
-
 const inputDir = flags.inputDirectory
 const outputDir = flags.outputDirectory
 const options = {
