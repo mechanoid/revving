@@ -66,11 +66,12 @@ tape.test('revFiles', tst => {
 })
 
 tape.test('copyFileWithHashedName', tst => {
-  tst.test('copy without original files', async t => {
+  tst.test('in production mode, copy without original files', async t => {
     const testTmpFolder = path.join(testTmpPath, 'copyFileWithHashedName-test')
     const copyFile = revving.copyFileWithHashedName(
       sampleDirPath,
-      testTmpFolder
+      testTmpFolder,
+      { mode: 'production' }
     )
 
     const testFilePath = path.join(sampleDirPath, 'file.txt')
