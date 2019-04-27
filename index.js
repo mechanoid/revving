@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 const hasha = require('hasha')
+const { logger } = require('./logger.js')
 
 const flattenArray = (arr, curr = []) => arr.concat(curr)
 
@@ -70,11 +71,11 @@ const copyFileWithHashedName = (
     throw e
   }
 
+  logger.log('verbose', baseSourceFileName, baseTargetFileName)
   return [baseSourceFileName, baseTargetFileName]
 }
 
 const manifestRefPath = (file, options = {}) => {
-  console.log(options.prefixPath)
   return options.prefixPath ? path.join(options.prefixPath, file) : file
 }
 
@@ -102,6 +103,12 @@ const writeManifest = async (manifestFiles, outputDir, options = {}) => {
 
 const revFiles = async (inputDir, outputDir, options = {}) => {
   const files = await collectFiles(inputDir)
+
+  logger.log('verbose', '\navailable files:')
+
+  files.forEach(f => {
+    logger.log('verbose', f)
+  })
 
   await fs.ensureDir(outputDir)
 

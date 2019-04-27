@@ -4,6 +4,7 @@ const path = require('path')
 const args = require('args')
 
 const revving = require(path.join('..', 'index.js'))
+const { logger, transports } = require(path.join('..', 'logger.js'))
 
 args.option(
   'input-directory',
@@ -29,6 +30,8 @@ args.option(
   'prefix-path',
   'path that prefixes all file references in the manifest.json'
 )
+
+args.option('verbose', 'provided more output')
 
 args.option(
   'mode',
@@ -125,6 +128,10 @@ const flags = args.parse(process.argv, {
   }
 })
 
+if (flags.verbose) {
+  transports.console.level = 'verbose'
+}
+
 const inputDir = flags.inputDirectory
 const outputDir = flags.outputDirectory
 const options = {
@@ -136,7 +143,9 @@ const options = {
 revving
   .revFiles(inputDir, outputDir, options)
   .then(manifest => {
-    console.log(manifest)
+    logger.log('info', `copied files to ${outputDir}`)
+    logger.log('info', `created ${path.join(outputDir, 'manifest.json')}`)
+    logger.log('verbose', 'manifest.json', manifest)
   })
   .catch(e => {
     console.error(e)
